@@ -26,12 +26,22 @@ namespace ProjectKanban.Users
             }
         }
 
+        public UserRecord GetByUsername(string username)
+        {
+            using (var connection = _database.Connect())
+            {
+                connection.Open();
+                return connection.QuerySingleOrDefault<UserRecord>(
+                    "SELECT * FROM user WHERE username = @Username", new { Username = username });
+            }
+        }
+
         public List<UserRecord> GetAll()
         {
             using (var connection = _database.Connect())
             {
                 connection.Open();
-                var users =connection.Query<UserRecord>("SELECT * from user;");
+                var users =connection.Query<UserRecord>("SELECT * from user Order by Username Asc;");
                 return users.ToList();
             }
         }

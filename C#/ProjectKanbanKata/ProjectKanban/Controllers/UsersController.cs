@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using ProjectKanban.Users;
+using ProjectKanban.Utilities;
 
 namespace ProjectKanban.Controllers
 {
@@ -43,11 +45,22 @@ namespace ProjectKanban.Controllers
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        public string Initials { get; set; }
+        public string Initials {
+            get
+            {
+                return Helper.GetIntials(Username);
+            }
+            set
+            {
+            }
+        }
+
     }
 
     public class AllUsersResponse
     {
         public List<UserModel> Users { get; set; }
     }
+
+
 }

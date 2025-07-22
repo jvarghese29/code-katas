@@ -20,7 +20,7 @@ namespace ProjectKanban.Tasks
             {
                 connection.Open();
                 using var transaction = connection.BeginTransaction();
-                var taskRecords = connection.Query<TaskRecord>("SELECT * from task;");
+                var taskRecords = connection.Query<TaskRecord>($"SELECT * from task where Id = {id};");
                 return taskRecords.First();
             }
         }
@@ -31,7 +31,7 @@ namespace ProjectKanban.Tasks
             {
                 connection.Open();
                 using var transaction = connection.BeginTransaction();
-                taskRecord.Id = connection.Insert("insert into task(status, description, estimated_dev_days) VALUES (@Status, @Description, @EstimatedDevDays);", taskRecord);
+                taskRecord.Id = connection.Insert("insert into task(status, description, estimated_dev_days,client_id) VALUES (@Status, @Description, @EstimatedDevDays,@ClientId);", taskRecord);
                 transaction.Commit();
             }
 
@@ -108,4 +108,4 @@ namespace ProjectKanban.Tasks
         public const string IN_SIGNOFF = "In Signoff";
         public const string DONE = "Done";
     }
-}
+    }

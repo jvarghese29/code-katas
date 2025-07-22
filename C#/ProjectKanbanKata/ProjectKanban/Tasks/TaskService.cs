@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using ProjectKanban.Controllers;
 using ProjectKanban.Users;
+using ProjectKanban.Utilities;
 
 namespace ProjectKanban.Tasks
 {
@@ -25,36 +27,45 @@ namespace ProjectKanban.Tasks
                 Description = taskRecord.Description,
                 Status = taskRecord.Status,
                 EstimatedDevDays = taskRecord.EstimatedDevDays,
-                Id = taskRecord.Id
+                Id = taskRecord.Id,
+                AssignedUsers = GetAssignedUsersByTaskId(id)
             };
         }
 
         public GetAllTasksResponse GetAll(Session session)
         {
-            var taskRecords = _taskRepository.GetAll();
+            var currentUser = _userRepository.GetByUsername(session.Username);
 
-            var response = new GetAllTasksResponse{Tasks = new List<TaskModel>()};
-
-            foreach (var task in taskRecords)
-            {
-                var taskModel = new TaskModel
+            var taskModels = _taskRepository.GetAll()
+                .Where(task => task.ClientId == currentUser.ClientId)
+                .Select(task => new TaskModel
                 {
                     Id = task.Id,
                     Status = task.Status,
                     EstimatedDevDays = task.EstimatedDevDays,
                     Description = task.Description,
-                };
-                taskModel.AssignedUsers = new List<TaskAssignedUserModel>();
-                var assigned = _taskRepository.GetAssignedFor(task.Id);
-                foreach (var assignee in assigned)
-                {
-                    var user = _userRepository.GetAll().First(x => x.Id == assignee.UserId);
-                    taskModel.AssignedUsers.Add(new TaskAssignedUserModel { Username = user.Username });
-                }
-                response.Tasks.Add(taskModel);
+                    AssignedUsers = GetAssignedUsersByTaskId(task.Id)
+                })
+                .OrderBy(task => Helper.GetStatusRank(task.Status))
+                .ToList();
+
+            return new GetAllTasksResponse { Tasks = taskModels };
+        }
+
+
+        public List<TaskAssignedUserModel>  GetAssignedUsersByTaskId(int id)
+        {
+             var assignedUsers = new List<TaskAssignedUserModel>();
+            var assigned = _taskRepository.GetAssignedFor(id);
+            foreach (var assignee in assigned)
+            {
+                var user = _userRepository.GetAll().First(x => x.Id == assignee.UserId);
+                assignedUsers.Add(new TaskAssignedUserModel { Username = user.Username });
             }
 
-            return response;
+            return assignedUsers;
         }
+
+       
     }
 }

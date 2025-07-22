@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Forked/v17/.wsuo
+/C#/ProjectKanbanKata/.vs/ProjectKanban/DesignTimeBuild/.dtbcache.v2

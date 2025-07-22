@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectKanban.Data;
 using ProjectKanban.Tasks;
 using ProjectKanban.Users;
+using ProjectKanban.Utilities;
 
 namespace ProjectKanban.Controllers
 {
@@ -44,7 +45,16 @@ namespace ProjectKanban.Controllers
 
     public class TaskAssignedUserModel
     {
-        public string Initials { get; set; }
+        public string Initials
+        {
+            get
+            {
+                return Helper.GetIntials(Username);
+            }
+            set
+            {
+            }
+        }
         public string Username { get; set; }
     }
 
